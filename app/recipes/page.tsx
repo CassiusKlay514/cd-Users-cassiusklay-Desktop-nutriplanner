@@ -86,7 +86,11 @@ export default function RecipesPage() {
     <div className="px-5 py-6 md:px-10 md:py-10 max-w-5xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Bibliothèque de recettes</h1>
       <p className="text-gray-600 text-sm mt-1">
-        Filtrées selon votre profil. {recipes.length} résultat{recipes.length > 1 ? "s" : ""}.
+        {loading
+          ? "Chargement des recettes…"
+          : recipes.length > 0
+          ? `Filtrées selon votre profil. ${recipes.length} résultat${recipes.length > 1 ? "s" : ""}.`
+          : "Aucune recette ne correspond à ces filtres. Essayez « Tout »."}
       </p>
 
       <div className="mt-4 relative">
@@ -124,8 +128,17 @@ export default function RecipesPage() {
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="aspect-square bg-gray-100 animate-pulse" />
+              <div className="p-3 space-y-2">
+                <div className="h-3.5 bg-gray-100 rounded animate-pulse" />
+                <div className="h-3 bg-gray-100 rounded w-2/3 animate-pulse" />
+                <div className="h-2.5 bg-gray-100 rounded w-1/2 animate-pulse" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
