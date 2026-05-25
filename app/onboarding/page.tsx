@@ -12,8 +12,10 @@ import {
 import MultiChips from "@/components/MultiChips";
 import type { Goal, UserProfile } from "@/lib/types";
 import {
-  Activity, Apple, ArrowLeft, ArrowRight, Check, Leaf, ShieldAlert, Target, User as UserIcon, UtensilsCrossed,
+  Activity, Apple, ArrowLeft, ArrowRight, Check, Leaf, Loader2, Mail,
+  ShieldAlert, Target, User as UserIcon, UtensilsCrossed,
 } from "lucide-react";
+import { createClient, supabaseEnabled } from "@/lib/supabase/client";
 
 const STEPS = ["welcome", "identity", "physical", "activity", "goal", "diet", "restrictions", "summary"] as const;
 type Step = (typeof STEPS)[number];
@@ -32,6 +34,9 @@ export default function OnboardingPage() {
 
   const [step, setStep] = useState<Step>("welcome");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [sendingMagic, setSendingMagic] = useState(false);
+  const [magicSent, setMagicSent] = useState(false);
   const [age, setAge] = useState(30);
   const [sex, setSex] = useState<"male" | "female" | "other">("male");
   const [weightKg, setWeightKg] = useState(70);
@@ -52,7 +57,7 @@ export default function OnboardingPage() {
   const next = () => setStep(STEPS[Math.min(idx + 1, STEPS.length - 1)]);
   const back = () => setStep(STEPS[Math.max(idx - 1, 0)]);
 
-  const finish = () => {
+  const finish = async () => {
     const profile: UserProfile = {
       name: name.trim() || "Toi",
       age, sex, weightKg, heightCm, activity, goal,
@@ -64,11 +69,64 @@ export default function OnboardingPage() {
       onboardedAt: new Date().toISOString(),
     };
     setProfile(profile);
+
+    // Si email + Supabase configuré, envoie le magic link puis affiche un écran de confirmation
+    const cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail && cleanEmail.includes("@") && supabaseEnabled()) {
+      setSendingMagic(true);
+      try {
+        const supabase = createClient();
+        const { error } = await supabase.auth.signInWithOtp({
+          email: cleanEmail,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=/plan`,
+          },
+        });
+        if (!error) {
+          setMagicSent(true);
+          setSendingMagic(false);
+          return;
+        }
+      } catch {
+        // ignore, on continue sans auth
+      }
+      setSendingMagic(false);
+    }
+
     router.push("/plan");
   };
 
   const updatePrefs = <K extends keyof DietPreferences>(k: K, v: DietPreferences[K]) =>
     setDietPrefs((p) => ({ ...p, [k]: v }));
+
+  if (magicSent) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 max-w-md mx-auto text-center">
+        <div className="w-16 h-16 rounded-3xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+          <Mail className="w-8 h-8" />
+        </div>
+        <h1 className="text-2xl font-bold">Email envoyé !</h1>
+        <p className="text-gray-600 mt-2 text-sm">
+          Un lien de connexion vient d'être envoyé à <strong>{email}</strong>.
+          Cliquez dessus pour activer la synchronisation de vos données.
+        </p>
+        <p className="text-xs text-gray-400 mt-3">
+          Pas reçu après 1 min, vérifiez vos spams.
+        </p>
+        <button
+          onClick={() => router.push("/plan")}
+          className="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-white font-semibold"
+        >
+          Continuer sans attendre
+          <ArrowRight className="w-4 h-4" />
+        </button>
+        <p className="text-xs text-gray-400 mt-3 max-w-xs">
+          Vos données sont déjà sauvegardées localement.
+          L'activation du lien permet juste de les retrouver sur d'autres appareils.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col px-5 py-6 md:px-10 md:py-10 max-w-2xl mx-auto w-full">
@@ -83,9 +141,25 @@ export default function OnboardingPage() {
 
       <div className="flex-1 pb-32">
         {step === "welcome" && (
-          <StepBox icon={<Leaf className="w-7 h-7" />} title="Bienvenue 👋" subtitle="Quelques questions et on construit votre plan sur mesure.">
+          <StepBox icon={<Leaf className="w-7 h-7" />} title="Bienvenue 👋" subtitle="Quelques questions pour construire votre plan sur mesure.">
             <Field label="Votre prénom">
               <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Marie" autoFocus />
+            </Field>
+            <Field label="Votre email (recommandé)">
+              <input
+                className="input"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vous@exemple.com"
+              />
+              <p className="text-xs text-gray-500 mt-1.5 flex items-start gap-1.5">
+                <Mail className="w-3.5 h-3.5 mt-0.5 shrink-0 text-primary" />
+                Pour retrouver votre plan, vos recettes notées et votre garde-manger
+                sur tous vos appareils. Aucun mot de passe, un simple lien par email.
+              </p>
             </Field>
           </StepBox>
         )}
@@ -206,13 +280,13 @@ export default function OnboardingPage() {
         {step === "summary" && (
           <StepBox icon={<Check className="w-7 h-7" />} title="Tout est prêt !" subtitle="Récap de votre profil.">
             <div className="space-y-2 text-sm">
-              <Row k="Prénom" v={name || "—"} />
+              <Row k="Prénom" v={name || "·"} />
               <Row k="Âge" v={`${age} ans`} />
               <Row k="Morphologie" v={`${weightKg} kg · ${heightCm} cm`} />
               <Row k="Activité" v={activity} />
               <Row k="Objectif" v={GOAL_OPTIONS.find((g) => g.value === goal)?.label ?? goal} />
               <Row k="Cible quotidienne" v={`${calories} kcal`} />
-              <Row k="Régime principal" v={MAIN_DIETS.find((d) => d.value === dietPrefs.mainDiet)?.label ?? "—"} />
+              <Row k="Régime principal" v={MAIN_DIETS.find((d) => d.value === dietPrefs.mainDiet)?.label ?? "·"} />
               <Row k="Régime religieux" v={RELIGIOUS_DIETS.find((d) => d.value === dietPrefs.religiousDiet)?.label ?? "Aucun"} />
               <Row k="Régime santé" v={HEALTH_DIETS.find((d) => d.value === dietPrefs.healthDiet)?.label ?? "Aucun"} />
               <Row k="Exclusions" v={dietPrefs.exclusions.length ? `${dietPrefs.exclusions.length} choisies` : "aucune"} />
@@ -228,8 +302,22 @@ export default function OnboardingPage() {
             <ArrowLeft className="w-4 h-4" /> Retour
           </button>
           {step === "summary" ? (
-            <button onClick={finish} className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/30 active:scale-95">
-              Lancer mon plan <ArrowRight className="w-4 h-4" />
+            <button
+              onClick={finish}
+              disabled={sendingMagic}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/30 active:scale-95 disabled:opacity-60"
+            >
+              {sendingMagic ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Envoi du lien...
+                </>
+              ) : (
+                <>
+                  Lancer mon plan
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           ) : (
             <button onClick={next} disabled={step === "welcome" && !name.trim()} className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/30 active:scale-95 disabled:opacity-40 disabled:shadow-none">

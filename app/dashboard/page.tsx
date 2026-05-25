@@ -207,7 +207,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="font-semibold text-sm truncate">{m.title}</div>
                   <div className="text-xs text-gray-500">
-                    {m.calories} kcal · {m.readyInMinutes ?? "—"} min
+                    {m.calories} kcal · {m.readyInMinutes ?? "·"} min
                   </div>
                 </div>
                 <button

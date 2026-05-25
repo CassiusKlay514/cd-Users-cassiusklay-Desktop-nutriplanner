@@ -195,7 +195,7 @@ export default function CataloguePage() {
                   <div className={cn("w-2.5 h-2.5 rounded-full", r.color)} />
                   <div className="font-semibold text-sm mt-2">{r.name}</div>
                   <div className="text-lg font-bold mt-0.5">
-                    {total > 0 ? `${total.toFixed(2)} €` : "—"}
+                    {total > 0 ? `${total.toFixed(2)} €` : "·"}
                   </div>
                 </div>
               );
@@ -314,7 +314,7 @@ export default function CataloguePage() {
                         )}
                       >
                         <div className="font-semibold truncate">{r.name.split(" ")[0]}</div>
-                        <div>{rp ? `${rp.price.toFixed(2)}€` : "—"}</div>
+                        <div>{rp ? `${rp.price.toFixed(2)}€` : "·"}</div>
                       </div>
                     );
                   })}

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getClaude, MODEL } from "@/lib/claude";
 import { nutrient, searchRecipes } from "@/lib/spoonacular";
 import { translateTitlesFR } from "@/lib/translate";
-import { ensureDietPrefs } from "@/lib/utils";
+import { cleanAiText, ensureDietPrefs } from "@/lib/utils";
 import type {
   MealMoment, PlannedMeal, SpoonacularRecipe, UserProfile,
 } from "@/lib/types";
@@ -88,7 +88,7 @@ Choisis le meilleur et réponds en JSON.`,
       ...(picked.readyInMinutes !== undefined ? { readyInMinutes: picked.readyInMinutes } : {}),
     };
 
-    return NextResponse.json({ meal, reason: parsed.reason });
+    return NextResponse.json({ meal, reason: cleanAiText(parsed.reason ?? "") });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "unknown" },

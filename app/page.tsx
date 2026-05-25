@@ -2,7 +2,9 @@
 
 import { useStore } from "@/lib/store";
 import Link from "next/link";
-import { Calendar, ChefHat, Leaf, Sparkles, ShoppingBag, ArrowRight } from "lucide-react";
+import {
+  ArrowRight, Calendar, ChefHat, Leaf, LogIn, ShoppingBag, Sparkles,
+} from "lucide-react";
 
 export default function Home() {
   const profile = useStore((s) => s.profile);
@@ -21,19 +23,33 @@ export default function Home() {
             <span className="text-primary">sans y penser.</span>
           </h1>
           <p className="mt-4 text-gray-600 max-w-xl text-base md:text-lg">
-            NutriPlanner conçoit votre semaine de repas, génère votre liste de
-            courses et vous guide vers vos objectifs nutrition.
+            Votre semaine de repas conçue par l'IA, votre liste de courses
+            générée automatiquement, vos objectifs nutrition à portée de main.
           </p>
-          <Link
-            href="/onboarding"
-            className="mt-6 inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/30 active:scale-95 transition"
-          >
-            Commencer mon programme
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center">
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/30 active:scale-95 transition"
+            >
+              Créer mon programme
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white border border-gray-200 text-gray-800 font-semibold active:scale-95"
+            >
+              <LogIn className="w-4 h-4 text-primary" />
+              J'ai déjà un compte
+            </Link>
+          </div>
+
+          <p className="mt-3 text-xs text-gray-500">
+            Avec un compte, retrouvez votre plan et vos préférences sur tous vos appareils.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-12">
           <FeatureCard
             icon={<Calendar className="w-5 h-5" />}
             title="Plan 7 jours"
@@ -41,13 +57,13 @@ export default function Home() {
           />
           <FeatureCard
             icon={<ChefHat className="w-5 h-5" />}
-            title="200+ recettes"
+            title="Recettes en français"
             text="Bibliothèque filtrable par régime et allergies"
           />
           <FeatureCard
             icon={<ShoppingBag className="w-5 h-5" />}
-            title="Courses auto"
-            text="Liste agrégée prête à commander chez vos enseignes"
+            title="Courses comparées"
+            text="4 enseignes en parallèle, vous prenez la moins chère"
           />
         </div>
       </div>
@@ -60,7 +76,7 @@ export default function Home() {
         Salut {profile.name} 👋
       </h1>
       <p className="text-gray-600 mt-1">
-        Objectif : {profile.caloriesTarget} kcal / jour
+        Objectif : {profile.caloriesTarget} kcal par jour
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
@@ -108,7 +124,7 @@ export default function Home() {
             <Leaf className="w-4 h-4" />
             Le conseil du coach
           </div>
-          <p className="text-sm text-gray-700">{plan.notes}</p>
+          <p className="text-sm text-gray-700 whitespace-pre-wrap">{plan.notes}</p>
         </div>
       )}
     </div>

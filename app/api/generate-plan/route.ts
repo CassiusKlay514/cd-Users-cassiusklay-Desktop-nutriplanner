@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getClaude, MODEL } from "@/lib/claude";
 import { nutrient, searchRecipes } from "@/lib/spoonacular";
 import { translateTitlesFR } from "@/lib/translate";
-import { ensureDietPrefs } from "@/lib/utils";
+import { cleanAiText, ensureDietPrefs } from "@/lib/utils";
 import type {
   MealHistoryEntry,
   MealMoment,
@@ -106,6 +106,7 @@ export async function POST(req: NextRequest) {
 
     const claude = getClaude();
     const sys = `Tu es un coach nutritionnel français. Tu construis des plans de repas équilibrés.
+Contraintes de style : pas de markdown (** _ * etc.), pas de tirets cadratins (—). Texte naturel uniquement.
 Règles:
 1. Tu reçois la liste des recettes candidates par moment et tu sélectionnes UNE recette par moment et par jour.
 2. Respecte l'objectif calorique quotidien (±10%).
@@ -205,7 +206,7 @@ Il doit y avoir exactement ${days.length * 3} entrées dans meals (3 par jour, 1
       endDate,
       meals,
       createdAt: new Date().toISOString(),
-      notes: parsed.notes,
+      notes: cleanAiText(parsed.notes ?? ""),
     };
 
     return NextResponse.json({ plan });

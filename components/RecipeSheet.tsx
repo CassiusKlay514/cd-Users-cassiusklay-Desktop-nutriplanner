@@ -172,7 +172,7 @@ export default function RecipeSheet({ open, onClose, meal, onSwapped }: Props) {
               <>
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-2">
-                  <Stat icon={<Clock className="w-4 h-4" />} label="Prép." value={`${recipe.readyInMinutes ?? "—"} min`} />
+                  <Stat icon={<Clock className="w-4 h-4" />} label="Prép." value={`${recipe.readyInMinutes ?? "·"} min`} />
                   <Stat icon={<Users className="w-4 h-4" />} label="Pers." value={`${originalServings}`} />
                   <Stat icon={<Flame className="w-4 h-4 text-accent" />} label="Cal/pers." value={`${Math.round(kcal)}`} />
                 </div>

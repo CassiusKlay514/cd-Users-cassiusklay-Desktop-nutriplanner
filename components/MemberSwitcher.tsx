@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Settings, Users } from "lucide-react";
+import { ChevronDown, LogIn, LogOut, Settings, Users } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { createClient, supabaseEnabled } from "@/lib/supabase/client";
 
@@ -23,7 +23,18 @@ export default function MemberSwitcher() {
     router.push("/");
   };
 
-  if (!profile) return null;
+  // Pas encore de profil : on affiche un chip "Se connecter"
+  if (!profile) {
+    return (
+      <button
+        onClick={() => router.push("/login")}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+      >
+        <LogIn className="w-3.5 h-3.5" />
+        Se connecter
+      </button>
+    );
+  }
 
   const emoji = profile.avatarEmoji ?? "🧑";
   const color = profile.color ?? "#16a34a";

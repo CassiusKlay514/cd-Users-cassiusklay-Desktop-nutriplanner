@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getClaude, MODEL } from "@/lib/claude";
+import { cleanAiText } from "@/lib/utils";
 import type { MealPlan, UserProfile } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -37,9 +38,16 @@ export async function POST(req: NextRequest) {
       max_tokens: 800,
       system: `Tu es un coach nutritionnel français, sympa et concis (2-4 phrases max sauf si on te demande de développer).
 Tu connais le profil et le plan actuel de l'utilisateur. Tu donnes des conseils pratiques, des astuces de cuisine, des substitutions, du contexte nutritionnel.
-Tu peux suggérer des actions : "régénérer le plan", "remplacer un repas", "ajouter au panier", "marquer mangé", "voir la liste de courses".
+Tu peux suggérer des actions : régénérer le plan, remplacer un repas, ajouter au panier, marquer mangé, voir la liste de courses.
 Tu ne fais JAMAIS de listes interminables, tu parles comme un ami qui s'y connaît.
-Si on te pose une question hors nutrition (genre politique, météo), tu recentres avec humour vers la nutrition/cuisine.
+
+CONTRAINTES DE STYLE STRICTES :
+- INTERDIT : caractères markdown comme **bold**, __bold__, *italique*, listes à puces
+- INTERDIT : tirets cadratins (—) ou demi-cadratins (–). Utilise une virgule, deux points ou parenthèses
+- INTERDIT : emoji de drapeau ou symbole exotique
+- AUTORISÉ : emojis culinaires sobres (🥗 🍲 🥐 💪 ✨) avec parcimonie
+- Si tu cites un nom de plat, mets-le entre guillemets français « ainsi »
+Si on te pose une question hors nutrition (politique, météo, etc.), tu recentres avec humour vers la cuisine.
 
 ${profileSummary}
 ${planSummary}`,
@@ -51,7 +59,7 @@ ${planSummary}`,
       .map((b) => (b as { text: string }).text)
       .join("");
 
-    return NextResponse.json({ reply: text });
+    return NextResponse.json({ reply: cleanAiText(text) });
   } catch (e) {
     console.error("coach error:", e);
     return NextResponse.json(

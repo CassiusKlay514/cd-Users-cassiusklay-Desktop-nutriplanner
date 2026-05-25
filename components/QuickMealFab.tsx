@@ -143,7 +143,7 @@ export default function QuickMealFab() {
                 />
                 <h3 className="font-bold text-lg mt-3">{result.title}</h3>
                 <div className="text-sm text-gray-500 mt-1">
-                  {result.calories} kcal · {result.readyInMinutes ?? "—"} min · P{result.protein}g
+                  {result.calories} kcal · {result.readyInMinutes ?? "·"} min · P{result.protein}g
                 </div>
                 <div className="flex gap-2 mt-4">
                   <button

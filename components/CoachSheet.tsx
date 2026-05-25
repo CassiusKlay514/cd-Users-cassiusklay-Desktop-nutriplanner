@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Send, Sparkles, X } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cleanAiText, cn } from "@/lib/utils";
 
 interface Message {
   role: "user" | "assistant";
@@ -69,7 +69,7 @@ export default function CoachSheet({ open, onClose }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec");
-      setMessages([...next, { role: "assistant", content: data.reply as string }]);
+      setMessages([...next, { role: "assistant", content: cleanAiText(data.reply as string) }]);
     } catch (e) {
       setError(e instanceof Error ? e.message : "unknown");
     } finally {

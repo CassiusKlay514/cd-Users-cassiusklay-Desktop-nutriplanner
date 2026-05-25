@@ -36,7 +36,7 @@ export default function WeightTracker() {
           <div>
             <div className="text-xs uppercase tracking-wide text-gray-500">Poids</div>
             <div className="font-bold text-lg flex items-baseline gap-2">
-              {latest ? `${latest.kg} kg` : (profile?.weightKg ?? "—") + " kg"}
+              {latest ? `${latest.kg} kg` : (profile?.weightKg ?? "·") + " kg"}
               {delta !== null && (
                 <span className={`text-xs font-medium ${delta < 0 ? "text-emerald-600" : "text-rose-600"} flex items-center gap-0.5`}>
                   {delta < 0 ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}

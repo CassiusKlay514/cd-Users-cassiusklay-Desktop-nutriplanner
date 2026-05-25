@@ -88,6 +88,18 @@ export function fromIso(s: string) {
   return new Date(y, m - 1, d);
 }
 
+// Nettoie les retours IA : retire markdown bold/italic + tirets cadratins
+export function cleanAiText(s: string): string {
+  if (!s) return s;
+  return s
+    .replace(/\*\*(.+?)\*\*/g, "$1")    // **bold** → bold
+    .replace(/__(.+?)__/g, "$1")         // __bold__ → bold
+    .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, "$1")  // *italic* → italic
+    .replace(/—/g, ", ")                 // em-dash → virgule
+    .replace(/–/g, "-")                  // en-dash → tiret simple
+    .replace(/`([^`]+)`/g, "$1");        // `code` → code
+}
+
 // Traduction d'unités culinaires anglaises → FR + abrégées
 const UNIT_FR: Record<string, string> = {
   "teaspoon": "c. à café", "teaspoons": "c. à café", "tsp": "c. à café", "ts": "c. à café",

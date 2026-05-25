@@ -187,7 +187,7 @@ export default function ShoppingPage() {
                 )}
                 <div className={cn("w-2.5 h-2.5 rounded-full", r.color)} />
                 <div className="font-semibold text-sm mt-2">{r.name}</div>
-                <div className="text-lg font-bold mt-0.5">{total > 0 ? `${total.toFixed(2)} €` : "—"}</div>
+                <div className="text-lg font-bold mt-0.5">{total > 0 ? `${total.toFixed(2)} €` : "·"}</div>
                 <div className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
                   Commander <ExternalLink className="w-3 h-3" />
                 </div>
@@ -371,7 +371,7 @@ function ItemRow({
                     title={p?.source === "estimated" ? "Prix estimé" : "Prix Open Prices"}
                   >
                     <div className="font-semibold truncate">{r.name.split(" ")[0]}</div>
-                    <div>{p ? `${p.price.toFixed(2)}€` : "—"}</div>
+                    <div>{p ? `${p.price.toFixed(2)}€` : "·"}</div>
                   </div>
                 );
               })}

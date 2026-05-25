@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getClaude, MODEL } from "@/lib/claude";
+import { cleanAiText } from "@/lib/utils";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -59,7 +60,16 @@ Budget cible: ${budget ?? "moyen"}. Dessert → vin moelleux. Poisson → blanc.
       }
     }
     if (!parsed) throw new Error("Réponse Claude inexploitable");
-    return NextResponse.json(parsed);
+    // Nettoie markdown/tirets dans chaque suggestion
+    const cleaned = {
+      pairings: (parsed.pairings as Array<{ reason?: string; suggestion?: string; meal?: string }>).map((p) => ({
+        ...p,
+        reason: cleanAiText(p.reason ?? ""),
+        suggestion: cleanAiText(p.suggestion ?? ""),
+        meal: cleanAiText(p.meal ?? ""),
+      })),
+    };
+    return NextResponse.json(cleaned);
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "unknown" },
