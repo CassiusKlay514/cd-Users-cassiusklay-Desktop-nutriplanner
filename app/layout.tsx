@@ -15,7 +15,7 @@ const SITE_URL =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "NutriPlanner — Mangez mieux, sans y penser",
+    default: "NutriPlanner · Mangez mieux, sans y penser",
     template: "%s · NutriPlanner",
   },
   description:
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "IA cuisine", "anti-gaspillage", "comparateur prix",
   ],
   openGraph: {
-    title: "NutriPlanner — Mangez mieux, sans y penser",
+    title: "NutriPlanner · Mangez mieux, sans y penser",
     description:
       "Plan de repas IA, courses comparées, photo du frigo, suivi nutrition. Tout en français.",
     siteName: "NutriPlanner",

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getClaude, MODEL } from "@/lib/claude";
+import { cleanAiText } from "@/lib/utils";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -54,7 +55,23 @@ Règles:
       .join("");
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) throw new Error("Pas de JSON renvoyé");
-    return NextResponse.json(JSON.parse(m[0]));
+    const parsed = JSON.parse(m[0]) as {
+      dishName?: string;
+      estimatedServings?: number;
+      calories?: number;
+      protein?: number;
+      carbs?: number;
+      fat?: number;
+      confidence?: "low" | "medium" | "high";
+      components?: string[];
+      note?: string;
+    };
+    return NextResponse.json({
+      ...parsed,
+      dishName: cleanAiText(parsed.dishName ?? ""),
+      note: cleanAiText(parsed.note ?? ""),
+      components: (parsed.components ?? []).map((c) => cleanAiText(c)),
+    });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "unknown" },

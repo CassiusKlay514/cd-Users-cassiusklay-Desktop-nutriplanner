@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getClaude, MODEL } from "@/lib/claude";
+import { cleanAiText } from "@/lib/utils";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -56,7 +57,14 @@ Règles:
       summary: string;
     };
 
-    return NextResponse.json(parsed);
+    return NextResponse.json({
+      ingredients: parsed.ingredients.map((i) => ({
+        ...i,
+        name: cleanAiText(i.name),
+        notes: i.notes ? cleanAiText(i.notes) : undefined,
+      })),
+      summary: cleanAiText(parsed.summary ?? ""),
+    });
   } catch (e) {
     console.error("analyze-fridge error:", e);
     return NextResponse.json(
