@@ -101,6 +101,17 @@ button {
 }
 .animate-fade-in { animation: fadeIn 0.3s ease-out; }
 
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
 /* Style typographique global : pas de tirets cadratins, jamais */
 .no-emdash {
   hanging-punctuation: none;

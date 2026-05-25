@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ChefHat, Check, Clock, Flame, Loader2, Minus, Plus, RefreshCw, ShoppingBag, Star, Users, X,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { cn, formatAmountUnit } from "@/lib/utils";
 import CookingMode from "./CookingMode";
@@ -89,6 +90,9 @@ export default function RecipeSheet({ open, onClose, meal, onSwapped }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec");
       onSwapped?.(data.meal as PlannedMeal);
+      toast.success("Repas remplacé", {
+        description: `Désormais : ${(data.meal as PlannedMeal).title}`,
+      });
       onClose();
     } catch (e) {
       setError(e instanceof Error ? e.message : "unknown");
@@ -103,6 +107,9 @@ export default function RecipeSheet({ open, onClose, meal, onSwapped }: Props) {
     updateMeal(meal.date, meal.moment, {
       servings,
       excludedIngredientIds: Array.from(excludedIds),
+    });
+    toast.success("Panier mis à jour", {
+      description: `${ingredients.length - excludedIds.size} ingrédients pour ${servings} personne${servings > 1 ? "s" : ""}`,
     });
     setTimeout(() => { setSaving(false); onClose(); }, 250);
   };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { createClient, supabaseEnabled } from "@/lib/supabase/client";
 import { Leaf, Loader2, Mail } from "lucide-react";
 
@@ -27,8 +28,13 @@ export default function LoginPage() {
       });
       if (error) throw error;
       setSent(true);
+      toast.success("Lien magique envoyé", {
+        description: `Vérifiez votre boîte ${email}`,
+      });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      const msg = e instanceof Error ? e.message : "Erreur";
+      setError(msg);
+      toast.error("Échec d'envoi", { description: msg });
     } finally {
       setLoading(false);
     }

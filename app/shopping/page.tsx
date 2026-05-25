@@ -212,8 +212,23 @@ export default function ShoppingPage() {
       )}
 
       {loading && shopping.length === 0 ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <div className="mt-6 space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-200">
+                <div className="h-3 w-32 skeleton-shimmer rounded" />
+              </div>
+              {Array.from({ length: 4 }).map((_, j) => (
+                <div key={j} className="p-3 flex items-center gap-3">
+                  <div className="w-6 h-6 skeleton-shimmer rounded-md" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3.5 w-2/3 skeleton-shimmer rounded" />
+                    <div className="h-2.5 w-1/3 skeleton-shimmer rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       ) : (
         <>

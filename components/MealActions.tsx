@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { addDays, format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { cn, fromIso, isoDate } from "@/lib/utils";
 import type { MealMoment, PlannedMeal } from "@/lib/types";
@@ -43,11 +44,17 @@ export default function MealActions({ meal }: Props) {
 
   const handleMove = (targetDate: string, targetMoment: MealMoment) => {
     moveMeal(meal.date, meal.moment, targetDate, targetMoment);
+    toast.success("Repas déplacé", {
+      description: `${meal.title} → ${format(fromIso(targetDate), "EEEE d MMM", { locale: fr })}`,
+    });
     closeAll();
   };
 
   const handleCopy = (targetDate: string, targetMoment: MealMoment) => {
     copyMeal(meal.date, meal.moment, targetDate, targetMoment);
+    toast.success("Repas copié", {
+      description: `${meal.title} dupliqué`,
+    });
     closeAll();
   };
 
@@ -122,6 +129,7 @@ export default function MealActions({ meal }: Props) {
                   onClick={() => {
                     if (confirm("Supprimer ce repas du plan ?")) {
                       removeMeal(meal.date, meal.moment);
+                      toast.success("Repas supprimé du plan");
                       closeAll();
                     }
                   }}
@@ -229,6 +237,9 @@ export default function MealActions({ meal }: Props) {
                 <button
                   onClick={() => {
                     setGuestCount(meal.date, meal.moment, guestCount);
+                    toast.success(`Mode invités activé`, {
+                      description: `${meal.title} pour ${guestCount} personnes`,
+                    });
                     closeAll();
                   }}
                   className="mt-3 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-purple-600 text-white font-bold"
@@ -239,6 +250,7 @@ export default function MealActions({ meal }: Props) {
                   <button
                     onClick={() => {
                       setGuestCount(meal.date, meal.moment, 0);
+                      toast.success("Mode invités retiré");
                       closeAll();
                     }}
                     className="mt-2 w-full py-2.5 text-sm font-semibold text-gray-500"

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Camera, Check, Loader2, Sparkles, X } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface AnalyzedDish {
@@ -174,6 +175,9 @@ export default function MealPhotoSheet({ open, onClose, onLog }: Props) {
                     <button
                       onClick={() => {
                         onLog?.(result);
+                        toast.success("Plat ajouté à votre suivi", {
+                          description: `+${result.calories} kcal · ${result.dishName}`,
+                        });
                         onClose();
                       }}
                       className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-primary text-white font-bold"

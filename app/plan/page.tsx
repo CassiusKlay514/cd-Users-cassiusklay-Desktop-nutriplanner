@@ -8,6 +8,7 @@ import { fr } from "date-fns/locale";
 import {
   CalendarDays, Camera, ChefHat, ChevronRight, Flame, Grid3x3, Layers, Loader2, RefreshCw, Sparkles, Utensils,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { cn, fromIso, isoDate } from "@/lib/utils";
 import DateRangePicker from "@/components/DateRangePicker";
@@ -109,8 +110,13 @@ export default function PlanPage() {
       if (!res.ok) throw new Error(data.error || "Échec génération");
       setPlan(data.plan as MealPlan);
       setSelectedDay(data.plan.startDate);
+      toast.success("Plan généré", {
+        description: `${(data.plan as MealPlan).meals.length} repas sur ${days.length} jours`,
+      });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur inconnue");
+      const msg = e instanceof Error ? e.message : "Erreur inconnue";
+      setError(msg);
+      toast.error("Échec de la génération", { description: msg });
     } finally {
       setLoading(false);
     }

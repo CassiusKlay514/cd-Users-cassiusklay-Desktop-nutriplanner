@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Check, Loader2, Minus, Plus, Search, ShoppingBag, Sparkles, TrendingDown, Wine,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { cn, ensureDietPrefs } from "@/lib/utils";
 import {
@@ -126,7 +127,10 @@ export default function CataloguePage() {
     const isAdded = addedNames.has(p.name);
     if (isAdded) {
       const existing = customItems.find((i) => i.name === p.name);
-      if (existing) removeCustomItem(existing.id);
+      if (existing) {
+        removeCustomItem(existing.id);
+        toast.success(`${p.name} retiré du panier`);
+      }
     } else {
       addCustomItem({
         name: p.name,
@@ -137,6 +141,7 @@ export default function CataloguePage() {
         unit: p.defaultPack,
         checked: false,
       });
+      toast.success(`${p.emoji} ${p.name} ajouté au panier`);
     }
   };
 
